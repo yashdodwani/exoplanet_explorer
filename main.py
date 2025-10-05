@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter, UploadFile, File
+from fastapi import FastAPI, APIRouter, UploadFile, File, Body
 from pydantic import BaseModel
 import joblib
 import numpy as np
@@ -13,7 +13,7 @@ router = APIRouter()
 model = joblib.load("LightGBM_exoplanet_model.pkl")
 
 # For now, let's assume the classes are known (update as needed)
-label_classes = ['CANDIDATE', 'CONFIRMED', 'FALSE POSITIVE']
+label_classes = ['APC', 'CANDIDATE', 'CONFIRMED', 'FALSE POSITIVE']
 
 # List of all features except koi_disposition and the relative error columns
 feature_names = [
@@ -68,9 +68,15 @@ try:
     def decode_label(idx):
         return le.inverse_transform([int(idx)])[0]
 except Exception:
-    label_classes = ['CANDIDATE', 'CONFIRMED', 'FALSE POSITIVE']
+    label_classes = ['APC', 'CANDIDATE', 'CONFIRMED', 'FALSE POSITIVE']
     def decode_label(idx):
         return label_classes[int(idx)]
+
+# Load the feature list used for training
+try:
+    training_features = joblib.load("features.pkl")
+except Exception:
+    training_features = feature_names  # fallback, but may cause errors if not matching
 
 @router.post("/predict")
 def predict_exoplanet(data: ExoplanetInput):
@@ -87,21 +93,40 @@ def predict_exoplanet(data: ExoplanetInput):
 
 @router.post("/predict_csv")
 def predict_exoplanet_csv(file: UploadFile = File(...)):
-    # Read uploaded CSV file into DataFrame
     df = pd.read_csv(file.file)
-    # Fix column name for koi_fittype_LS+MCMC if needed
-    if 'koi_fittype_LS_MCMC' in df.columns:
-        df = df.rename(columns={'koi_fittype_LS_MCMC': 'koi_fittype_LS+MCMC'})
-    # Predict
+    df.columns = df.columns.str.strip()
+    print("Received columns ({}):".format(len(df.columns)), list(df.columns))
+    print("Expected columns ({}):".format(len(training_features)), list(training_features))
+    missing = [col for col in training_features if col not in df.columns]
+    extra = [col for col in df.columns if col not in training_features]
+    print("Missing columns:", missing)
+    print("Extra columns:", extra)
+    # Reindex to match training features, fill missing with 0
+    df = df.reindex(columns=training_features, fill_value=0)
+    print("DataFrame shape after reindex:", df.shape)
+    print("DataFrame columns after reindex:", list(df.columns))
     preds = model.predict(df)
-    # Convert predictions to string labels
     pred_labels = [decode_label(idx) for idx in preds]
-    # Add predictions to DataFrame
     df['prediction'] = pred_labels
-    # Convert DataFrame to CSV in memory
     output = io.StringIO()
     df.to_csv(output, index=False)
     output.seek(0)
     return StreamingResponse(output, media_type="text/csv", headers={"Content-Disposition": "attachment; filename=predicted_exoplanets.csv"})
+
+@router.post("/encode_label")
+def encode_label(label: str = Body(..., embed=True)):
+    try:
+        encoded = int(le.transform([label])[0])
+        return {"encoded": encoded}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/decode_label")
+def decode_label_api(encoded: int = Body(..., embed=True)):
+    try:
+        decoded = str(le.inverse_transform([encoded])[0])
+        return {"label": decoded}
+    except Exception as e:
+        return {"error": str(e)}
 
 app.include_router(router)

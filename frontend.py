@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import requests
 import io
-
+st.cache_data.clear()
 st.set_page_config(page_title="Exoplanet Explorer", layout="centered", page_icon="🪐", initial_sidebar_state="auto")
 
 st.markdown(
