@@ -42,7 +42,7 @@ st.markdown("""
 Upload a CSV file or enter the features for a single exoplanet candidate below to predict its disposition (CONFIRMED, CANDIDATE, FALSE POSITIVE).
 """)
 
-API_URL = "http://localhost:8000"
+API_URL = "/api"
 
 with st.expander("🔢 Predict for a single exoplanet candidate"):
     with st.form("single_form"):
@@ -167,4 +167,3 @@ st.markdown("""
 footer {visibility: hidden;}
 </style>
 """, unsafe_allow_html=True)
-
