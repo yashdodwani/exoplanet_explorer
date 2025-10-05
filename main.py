@@ -86,7 +86,7 @@ def predict_exoplanet(data: ExoplanetInput):
     if 'koi_fittype_LS_MCMC' in input_df.columns:
         input_df = input_df.rename(columns={'koi_fittype_LS_MCMC': 'koi_fittype_LS+MCMC'})
     # Predict
-    pred = model.predict(input_df)
+    pred = model.predict(input_df, predict_disable_shape_check=True)
     # Convert prediction to string label
     pred_label = decode_label(pred[0])
     
