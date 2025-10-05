@@ -89,6 +89,7 @@ def predict_exoplanet(data: ExoplanetInput):
     pred = model.predict(input_df)
     # Convert prediction to string label
     pred_label = decode_label(pred[0])
+    
     return {"prediction": pred_label}
 
 @router.post("/predict_csv")
@@ -105,7 +106,7 @@ def predict_exoplanet_csv(file: UploadFile = File(...)):
     df = df.reindex(columns=training_features, fill_value=0)
     print("DataFrame shape after reindex:", df.shape)
     print("DataFrame columns after reindex:", list(df.columns))
-    preds = model.predict(df)
+    preds = model.predict(df, predict_disable_shape_check=True)
     pred_labels = [decode_label(idx) for idx in preds]
     df['prediction'] = pred_labels
     output = io.StringIO()
