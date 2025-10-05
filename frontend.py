@@ -3,7 +3,7 @@ import pandas as pd
 import requests
 import io
 
-st.set_page_config(page_title="Exoplanet Predictor", layout="centered", page_icon="🪐", initial_sidebar_state="auto")
+st.set_page_config(page_title="Exoplanet Explorer", layout="centered", page_icon="🪐", initial_sidebar_state="auto")
 
 st.markdown(
     """
@@ -36,7 +36,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-st.title("🪐 Exoplanet Disposition Predictor")
+st.title("🪐 Exoplanet Explorer")
 
 st.markdown("""
 Upload a CSV file or enter the features for a single exoplanet candidate below to predict its disposition (CONFIRMED, CANDIDATE, FALSE POSITIVE).

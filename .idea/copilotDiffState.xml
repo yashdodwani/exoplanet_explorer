@@ -29,6 +29,15 @@
             </PendingDiffInfo>
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/requirements.txt">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/requirements.txt" />
+              <option name="originalContent" value="streamlit&#10;pandas&#10;requests&#10;fastapi&#10;uvicorn&#10;joblib&#10;lightgbm&#10;catboost&#10;scikit-learn&#10;numpy" />
+              <option name="updatedContent" value="streamlit&#10;pandas&#10;requests&#10;fastapi&#10;uvicorn&#10;joblib&#10;lightgbm&#10;catboost&#10;scikit-learn&#10;numpy&#10;matplotlib&#10;seaborn" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
       </map>
     </option>
   </component>
