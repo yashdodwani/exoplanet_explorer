@@ -26,4 +26,4 @@ COPY supervisord.conf /etc/supervisor/supervisord.conf
 EXPOSE 80
 
 # Remove old CMD, use supervisor to start all services
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]
