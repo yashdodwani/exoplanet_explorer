@@ -18,9 +18,9 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 # Copy all project files
 COPY . .
 
-# Expose ports for FastAPI (8000) and Streamlit (8501)
-EXPOSE 8000 8501
+# Expose only Streamlit port (8501) for public access
+EXPOSE 8501
 
-# Start both FastAPI and Streamlit using a process manager
-CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port 8000 & streamlit run frontend.py --server.port 8501 --server.address 0.0.0.0"]
-
+# Start FastAPI in the background, Streamlit in the foreground
+CMD uvicorn main:app --host 0.0.0.0 --port 8000 & \
+    streamlit run frontend.py --server.port 8501 --server.address 0.0.0.0
